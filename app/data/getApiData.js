@@ -19,6 +19,8 @@ const getApiData = () => {
         .then((data) => {
           writeFile(JSON_CACHE_LOCATION, data, {spaces: 2})
             .then(() => {
+              // TODO: data isn't getting passed here. can be hacky later if
+              // need be
               console.log('file write successful'); // TODO: better log message
               return data;
             })
