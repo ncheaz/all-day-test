@@ -5,13 +5,16 @@ const writeFile = promisify(jsonfile.writeFile);
 const rp = require('request-promise');
 const _ = require('lodash');
 
+
+const JSON_CACHE_LOCATION = './cache.json';
+
 // TODO: move to own file
 /**
  * Get the options with a specific page number
  *
  * @function
  */
-const getOptions = (() => {
+const getRequestOptions = (() => {
   const baseUrl = "http://www.anapioficeandfire.com/api"
   const characterPath = "/characters"
 
@@ -24,83 +27,24 @@ const getOptions = (() => {
   }
 
   // TODO: better name
-  const getOptions = (page) => {
+  const getRequestOptions = (page) => {
     let optClone = _.cloneDeep(options);
     optClone.qs.page = page;
     return optClone
   }
   
-  return getOptions
+  return getRequestOptions
 })();
 
-
-const JSON_CACHE_LOCATION = './cache.json';
-const QUOTE_JSON_LOCATION = './docs/quotes.json';
-
-// TODO: move these into a more sensible scope
-let apiCacheData = [];
-let quotesCacheData = [];
-
-/**
- * Initializes the data from API
- *   callback(err, apiCacheData, quotesCacheData);
- */
-const initializeData = (callback) => {
-  let otherCompleted = false;
-
-  populateApiData()
-    .then((res) => {
-      if (otherCompleted && callback) {
-        callback(null, apiCacheData, quotesCacheData);
-      } else {
-        otherCompleted = true;
-      }
-    })
-    .catch((err) => {
-      callback(err)
-      console.error(err)
-    })
-  populateQuotesData()
-    .then((quoteArray) => {
-      if (otherCompleted && callback) {
-        callback(null, apiCacheData, quotesCacheData);
-      } else {
-        otherCompleted = true;
-      }
-    })
-    .catch((err) => {
-      callback(err)
-      console.error(err)
-    })
-}
-
-// TODO: better name
 /**
  * @promise
  */
-const populateQuotesData = () => {
-  // TODO: might need an event emitter here?
-  return readFile(QUOTE_JSON_LOCATION)
-    .then((quoteArray) => {
-      quotesCacheData = quoteArray;
-      return quoteArray;
-    })
-    // TODO: catch error
-}
-
-// TODO: better name (this just populates in memory cache)
-/**
- * @promise
- */
-const populateApiData = () => {
+const getApiData = () => {
   return readFile(JSON_CACHE_LOCATION)
     .then((apiData) => {
-      // TODO
-      apiCacheData = apiData;
       return apiData;
     })
     .catch((err) => {
-      // FIXME: how do I make sure this only executes on the right kind of data
       return cacheDataFromApi();
     })
 }
@@ -113,6 +57,7 @@ const populateApiData = () => {
 const cacheDataFromApi = () => {
   let pageCounter = 1;
   console.log('Getting data from API')
+  let apiCacheData = [];
 
   // TODO: better name
   const callback = (res) => {
@@ -123,11 +68,11 @@ const cacheDataFromApi = () => {
     pageCounter++;
     // TODO: use lodash merge
     apiCacheData = apiCacheData.concat(res);
-    return rp(getOptions(pageCounter))
+    return rp(getRequestOptions(pageCounter))
       .then(callback);
   }
 
-  return rp(getOptions(pageCounter))
+  return rp(getRequestOptions(pageCounter))
     .then(callback)
     .catch((err) => {
       if (!err) { // reached last page of API
@@ -146,4 +91,4 @@ const cacheDataFromApi = () => {
     })
 }
 
-module.exports = initializeData;
+module.exports = getApiData;
