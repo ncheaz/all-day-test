@@ -1,0 +1,35 @@
+{
+  "name": "all-day-test",
+  "version": "1.0.0",
+  "description": "## description Query the characters from the \"Game of Thrones\" public API at [api of ice and fire](https://anapioficeandfire.com/Documentation), and host an API with a set of endpoints that contains cross referenced character info and quotes belonging to the character.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "api-iceandfire": "^0.1.0",
+    "asoiaf-api": "^1.0.1",
+    "es6-promisify": "^5.0.0",
+    "express": "^4.14.0",
+    "jsonfile": "^2.4.0",
+    "lodash": "^4.17.1",
+    "promisify": "^0.0.3",
+    "request": "^2.78.0",
+    "request-promise": "^4.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ncheaz/all-day-test.git"
+  },
+  "author": "RJ Miller <rjmiller10@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ncheaz/all-day-test/issues"
+  },
+  "homepage": "https://github.com/ncheaz/all-day-test#readme"
+}
