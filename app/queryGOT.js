@@ -1,5 +1,6 @@
 var jsonfile = require('jsonfile');
 var rp = require('request-promise');
+var fs = require('fs');
 
 
 var quotesFile = '../docs/quotes.json';
@@ -9,11 +10,8 @@ var charactersFile = '../docs/characters.json';
 var page = 1; //default starting page
 var pageSize = 50; //default page size
 
-var allCharacters = ['']; //
+var allCharacters = [''];
 var quotesDict = {};
-
-
-
 
 
 //make quotesDict
@@ -55,7 +53,6 @@ var combineData = function (data) {
 //read characters from public api
 var readFromAPI = function (data, page, pageSize) {
     if (data.length == 0) {
-        //TODO: check file before write
 
         jsonfile.writeFile(charactersFile, allCharacters, {spaces: 2}, function (err) {
 
@@ -82,10 +79,6 @@ var readFromAPI = function (data, page, pageSize) {
 };
 
 
-
-
-
-
 //function to generate characters data
 var generateCharacters = function () {
     readQuotes(function () {
@@ -95,9 +88,19 @@ var generateCharacters = function () {
 
 
 //entry point
-generateCharacters();
+var start = function () {
+    fs.stat(charactersFile, function (err, stat) {
+        if (err == null) {
+            console.log('File exists! No need to query public API');
+        } else if (err.code = 'ENOENT'){
+            generateCharacters();
+        } else {
+            console.log('Some other errors!');
+        }
+    })
+};
 
-
+start();
 
 
 
