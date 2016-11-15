@@ -10,6 +10,8 @@ The quotes document is found in the local repository [quotes.json](./docs/quotes
 * Use promises when at all possible
 * Searching for information on the internet is allowed
 * It's ok to ask questions and clarification while going through this exercise
+* Do not copy any code.  You can refer to code on the web, but copying is not allowed
+* Query the external API only once per app instance
 
 ## acceptance
 * All character documents from [api of ice and fire](https://anapioficeandfire.com/Documentation) must have the quotes from
@@ -19,4 +21,11 @@ The quotes document is found in the local repository [quotes.json](./docs/quotes
     * GET /characters/id
     * GET /characters?offset=10&limit=10
     * GET /characters?name="Jon Snow"
-* Make a pull request into your respective branches(ryan, nathan), and resolve code review comments.  Exercise completes when your code is merged.
+* Make a pull request into your respective branches(ryan, nathan), and resolve code review comments
+* Exercise completes when your code is merged
+
+## success criteria
+* Demonstrate the ability to write code to spec, following agreed upon patterns, and satisfying the acceptance criteria
+* Keep the coding conventions consistent
+* Need to complete each stage of acceptance, and test the code, before moving on to the next one
+* Complete the exercise in a timely manner
