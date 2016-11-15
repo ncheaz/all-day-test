@@ -3,7 +3,8 @@ const promisify = require('es6-promisify');
 const readFile = promisify(jsonfile.readFile);
 
 readFile('docs/quotes.json')
-  .then((obj) => {
-    console.dir(obj);
+  .then((quoteArray) => {
+    quoteArray.forEach((obj) => {
+      console.log(obj.character);
+    })
   })
-// TODO: handle error
