@@ -8,6 +8,8 @@ const app = express();
 
 const charactersUri = '/characters';
 
+let cachedData;
+
 app.get('/', (req, res) => {
   res.send('GAME OF THRONES CHARACTER DATA');
 })
@@ -17,37 +19,31 @@ app.get(charactersUri, (req, res) => {
   let offset = req.query.offset;
   let limit = req.query.limit;
   if (name){
-    initializeData(quoteTransform(null, (err, data) => {
-      let foundData = data.filter((obj) => {
-        return obj.name === name;
-      })[0]; // gets first match (probably only match)
-      res.send(foundData);
-    }));
-  } else if (offset && limit) { // FIXME: this won't work if offset is 0
-    initializeData(quoteTransform(null, (err, data) => {
-      let start = parseInt(offset);
-      let end = start + parseInt(limit);
-      let slicedData = data.slice(start, end);
-      res.send(slicedData);
-    }));
+    let foundData = cachedData.filter((obj) => {
+      return obj.name === name;
+    })[0]; // gets first match (probably only match)
+    res.send(foundData);
+} else if (offset && limit) { // FIXME: this won't work if offset is 0
+    let start = parseInt(offset);
+    let end = start + parseInt(limit);
+    let slicedData = cachedData.slice(start, end);
+    res.send(slicedData);
   } else {
-    initializeData(quoteTransform(null, (err, data) => {
-      res.send(data);
-    }));
+    res.send(cachedData);
   }
 })
 
 app.get(charactersUri + '/:id' , (req, res) => {
-  initializeData(quoteTransform(null, (err, data) => {
-    console.log(req.params.id);
-    let foundData = data.filter((obj) => {
-      return obj.id === req.params.id;
-    })[0]; // gets first match (probably only match)
-    res.send(foundData);
-  }));
+  let foundData = cachedData.filter((obj) => {
+    return obj.id === req.params.id;
+  })[0]; // gets first match (probably only match)
+  res.send(foundData);
 })
 
 app.listen(3000, () => {
   console.log('app listening on port 3000');
+  initializeData(null, quoteTransform(null, (err, data) => {
+    cachedData = data;
+  }));
 })
 
