@@ -5,7 +5,8 @@ const getQuotesData = require('./getQuotesData.js');
  * Initializes the data from API
  *   callback(err, apiCacheData, quotesCacheData);
  */
-const initializeData = (callback) => {
+const initializeData = (err, callback) => {
+  if (err) return err;
   let apiCacheData = [];
   let quotesCacheData = [];
 

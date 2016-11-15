@@ -42,7 +42,7 @@ app.get(charactersUri + '/:id' , (req, res) => {
 
 app.listen(3000, () => {
   console.log('app listening on port 3000');
-  initializeData(quoteTransform(null, (err, data) => {
+  initializeData(null, quoteTransform(null, (err, data) => {
     cachedData = data;
   }));
 })
