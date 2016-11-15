@@ -1,20 +1,68 @@
 var jsonfile = require('jsonfile');
 var rp = require('request-promise');
-var inputFile = '../docs/quotes.json';
-var outputFile = '../docs/characters.json';
 
 
-//var page = 1;
-var pageSize = 1;
-
-var allCharacters = [];
+var quotesFile = '../docs/quotes.json';
+var charactersFile = '../docs/characters.json';
 
 
+var page = 1; //default starting page
+var pageSize = 50; //default page size
+
+var allCharacters = ['']; //
+var quotesDict = {};
 
 
 
-var readFromApi = function (callback) {
-    for (var page = 1; page < 10; page++) {
+
+
+//make quotesDict
+var makeDict = function (quotes) {
+    for (var i in quotes) {
+        var quote = quotes[i].quote;
+        var name = quotes[i].character;
+        if (quotesDict.hasOwnProperty(name)) {
+            quotesDict[name].push(quote);
+        } else {
+            quotesDict[name] = [];
+            quotesDict[name].push(quote);
+        }
+    }
+};
+
+//read quotes from quotesFile
+var readQuotes = function (callback) {
+    jsonfile.readFile(quotesFile, function (err, obj) {
+        makeDict(obj);
+        callback();
+    });
+};
+
+
+//query datas from quotes.json and combine to characters.json
+var combineData = function (data) {
+    for (var i in data) {
+        var name = data[i].name;
+        var quote = quotesDict[name];
+        if (quote) {
+            console.log('add quote to ' + name);
+            data[i].quotes = quote;
+        }
+    }
+};
+
+
+//read characters from public api
+var readFromAPI = function (data, page, pageSize) {
+    if (data.length == 0) {
+        //TODO: check file before write
+
+        jsonfile.writeFile(charactersFile, allCharacters, {spaces: 2}, function (err) {
+
+        });
+        return;
+    }
+    while (data) {
         var options = {
             uri: 'http://www.anapioficeandfire.com/api/characters?page=' + page + '&pageSize=' + pageSize,
             headers: {
@@ -22,51 +70,34 @@ var readFromApi = function (callback) {
             },
             json: true
         };
-
-        rp(options)
-            .then(function (data) {
-                allCharacters.push(data);
+        return rp(options).then(function (data) {
+            combineData(data);
+            allCharacters.push(data);
+            readFromAPI(data, page + 1, pageSize);
+        })
+            .catch(function (err) {
 
             })
-            .catch(function (err) {
-                // Crawling failed...
-            });
-    };
-
+    }
 };
 
-readFromApi(function (allCharacters) {
-    jsonfile.writeFile(outputFile, allCharacters, {spaces: 2}, function(err) {
+
+
+
+
+
+//function to generate characters data
+var generateCharacters = function () {
+    readQuotes(function () {
+        readFromAPI(allCharacters, page, pageSize);
     })
-});
+};
 
 
+//entry point
+generateCharacters();
 
 
-
-
-
-
-
-// jsonfile.readFile(file, function(err, obj) {
-//
-//     for (var i in obj) {
-//         var quote = obj[i].quote;
-//         var name = obj[i].character;
-//         //console.log(quote);
-//         charactersNames.push(name);
-//     }
-//
-//     charactersNames.forEach(function (characterName) {
-//         var character = asoaif.getCharacterByName(characterName);
-//         if (character.length > 0) {
-//             //console.log(character);
-//         }
-//     });
-//
-//
-//
-// });
 
 
 
